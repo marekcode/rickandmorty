@@ -1,27 +1,39 @@
-import { CharacterType, OperationType } from "../../types";
-import { getFavoritesCharacters } from "../helper"
-import character from "./characters";
+import { CharacterType, OperationType, StateType } from "../../types";
+import { getFavoritesCharacters } from "../helper";
+import { ActionContext } from "vuex";
 
-export default ({
+export default {
   state: {
     favoritesList: [] as Array<CharacterType>
   },
   getters: {
-    isOnFavoritesList: (state) => (id) => {
-      return Boolean(state.favoritesList.find((character: CharacterType) => character.id === id));
+    isOnFavoritesList: (state: StateType) => (id: number): boolean => {
+      return Boolean(
+        state.favoritesList &&
+          state.favoritesList.find(
+            (character: CharacterType) => character.id === id
+          )
+      );
     }
   },
   mutations: {
-    initFavoritesList(state): void {
+    initFavoritesList(state: StateType): void {
       state.favoritesList = getFavoritesCharacters();
     },
-    updateFavoritesList(state, { character, operation }): void {
-      if (operation === OperationType.add) {
+    updateFavoritesList: (state: StateType) => (
+      character: CharacterType,
+      operation: OperationType
+    ): void => {
+      if (operation === OperationType.add && state.favoritesList) {
         state.favoritesList.push(character);
       }
 
       if (operation === OperationType.remove) {
-        const newFav = state.favoritesList.filter((person: CharacterType) => person.id !== character.id);
+        const newFav =
+          state.favoritesList &&
+          state.favoritesList.filter(
+            (person: CharacterType) => person.id !== character.id
+          );
         state.favoritesList = newFav;
       }
 
@@ -29,15 +41,21 @@ export default ({
     }
   },
   actions: {
-    initFavorites({ commit }): void {
-      commit("initFavoritesList");
+    initFavorites: (context: ActionContext<StateType, StateType>): void => {
+      context.commit("initFavoritesList");
     },
-    updateFavorites({ commit, getters }, { character, operation }): void {
-      const contain = getters.isOnFavoritesList(character.id);
-      if (contain && operation === OperationType.remove || !contain && operation === OperationType.add) {
-        commit("updateFavoritesList", { character, operation });
+    updateFavorites: (context: ActionContext<StateType, StateType>) => (
+      character: CharacterType,
+      operation: OperationType
+    ): void => {
+      const contain = context.getters.isOnFavoritesList(character.id);
+      if (
+        (contain && operation === OperationType.remove) ||
+        (!contain && operation === OperationType.add)
+      ) {
+        context.commit("updateFavoritesList", { character, operation });
       }
     }
   },
   modules: {}
-});
+};

@@ -1,7 +1,5 @@
 <template>
-  <nav class="navtab">
-    
-  </nav>
+  <nav class="navtab"></nav>
 </template>
 
 <script lang="ts">

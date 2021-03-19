@@ -1,41 +1,62 @@
-import { CharacterType } from "@/types";
+import {
+  CharacterType,
+  StateType,
+  DisplayedCharacterType,
+  DisplayedCharacter
+} from "@/types";
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { ActionContext } from "vuex";
 import { getCharacter } from "rickmortyapi";
 
 Vue.use(Vuex);
 
-export default ({
+export default {
   state: {
     characters: [],
     properties: ["image", "id", "name", "gender", "species", "episode"]
   },
   getters: {
-    getBaseUrl(state) {
-      return state.baseUrl;
-    },
-    modifiedCharacters(state): Array<CharacterType>{
-      return state.characters.map((character: CharacterType) => {
-        const person = state.properties.reduce((newCharacter: Record<string, string>, property: string) => {
-          newCharacter[property] = character[property];
-          return newCharacter;
-        }, {});
+    modifiedCharacters(
+      state: StateType
+    ): Array<DisplayedCharacterType> | undefined {
+      return (
+        state.characters &&
+        state.characters.map((character: CharacterType) => {
+          const acc: DisplayedCharacterType = {};
+          const person =
+            state.properties &&
+            state.properties.reduce(
+              (
+                newCharacter: DisplayedCharacterType,
+                property: keyof typeof DisplayedCharacter
+              ) => {
+                const newPropertyValue = {
+                  property: character[property]
+                };
+                newCharacter = {
+                  ...newCharacter,
+                  ...newPropertyValue
+                };
+                return newCharacter;
+              },
+              acc
+            );
 
-        return person as CharacterType;
-      });
+          return person as DisplayedCharacterType;
+        })
+      );
     }
   },
   mutations: {
-    async initCharactersList(state) {
+    async initCharactersList(state: StateType) {
       const chars = await getCharacter();
       state.characters = chars.results;
     }
   },
   actions: {
-    getAllCharacters({ commit }): void {
-      console.log('getall')
-      commit("initCharactersList");
-    },
+    getAllCharacters(context: ActionContext<StateType, StateType>): void {
+      context.commit("initCharactersList");
+    }
   },
   modules: {}
-});
+};
