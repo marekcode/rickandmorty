@@ -6,9 +6,17 @@ import Favorites from "./modules/favorites";
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
+  devtools: true,
   state: {
-    baseUrl: "https://rickandmortyapi.com/api",
-    columns: ["Photo", "Character ID", "Name", "Gender", "Species", "Last Eposode", "Add To Favorites"],
+    columns: [
+      "Photo",
+      "Character ID",
+      "Name",
+      "Gender",
+      "Species",
+      "Last Eposode",
+      "Add To Favorites"
+    ]
   },
   getters: {},
   mutations: {},

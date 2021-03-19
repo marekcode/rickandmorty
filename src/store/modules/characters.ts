@@ -1,41 +1,48 @@
-import { CharacterType } from "@/types";
+import {
+  CharacterType,
+  StateType,
+  DisplayedCharacterType,
+  DisplayedCharacter
+} from "@/types";
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { ActionContext } from "vuex";
 import { getCharacter } from "rickmortyapi";
 
 Vue.use(Vuex);
 
-export default ({
+export default {
   state: {
     characters: [],
-    properties: ["image", "id", "name", "gender", "species", "episode"]
   },
   getters: {
-    getBaseUrl(state) {
-      return state.baseUrl;
-    },
-    modifiedCharacters(state): Array<CharacterType>{
-      return state.characters.map((character: CharacterType) => {
-        const person = state.properties.reduce((newCharacter: Record<string, string>, property: string) => {
-          newCharacter[property] = character[property];
-          return newCharacter;
-        }, {});
-
-        return person as CharacterType;
-      });
+    modifiedCharacters(
+      state: StateType
+    ): Array<DisplayedCharacterType> | undefined {
+      return (
+        state.characters &&
+        state.characters.map((character: CharacterType) => {
+          return {
+            image: character.image,
+            id: character.id,
+            name: character.name,
+            gender: character.gender,
+            species: character.species,            
+            episode: character.episode
+          }
+        })
+      );
     }
   },
   mutations: {
-    async initCharactersList(state) {
+    async initCharactersList(state: StateType) {
       const chars = await getCharacter();
       state.characters = chars.results;
     }
   },
   actions: {
-    getAllCharacters({ commit }): void {
-      console.log('getall')
-      commit("initCharactersList");
-    },
+    getAllCharacters(context: ActionContext<StateType, StateType>): void {
+      context.commit("initCharactersList");
+    }
   },
   modules: {}
-});
+};
