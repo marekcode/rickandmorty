@@ -83,6 +83,7 @@ export default Vue.extend({
       const operation = this.selected
         ? OperationType.remove
         : OperationType.add;
+        console.log('qqq', character, operation)
       this.$store.dispatch("updateFavorites", { character, operation });
     }
   },

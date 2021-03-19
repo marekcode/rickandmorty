@@ -57,7 +57,6 @@ export enum DisplayedCharacter {
 export interface StateType {
   columns?: Array<string>;
   characters?: Array<CharacterType>;
-  properties?: Array<keyof typeof DisplayedCharacter>;
   favoritesList?: Array<CharacterType>;
 }
 
