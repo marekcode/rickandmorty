@@ -48,9 +48,7 @@ export default {
       character: CharacterType,
       operation: OperationType
     ): void => {
-      console.log('co', 6)
       const contain = context.getters.isOnFavoritesList(character.id);
-      console.log('co', contain)
       if (
         (contain && operation === OperationType.remove) ||
         (!contain && operation === OperationType.add)
